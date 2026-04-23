@@ -26,7 +26,7 @@ be the input for the next layer the graph engine
 #### ⚙️ Architecture
 
 ```mermaid
-graph TD
+graph LR
 A[repo]-->B[traversal engine]
 B-->C[filtering layer]
 
