@@ -30,5 +30,17 @@ graph LR
 A[repo]-->B[traversal engine]
 B-->C[filtering layer]
 
+```
+### Responsibilities:
+-Folder traversal
+-content extraction
+-Filtering(Performance consideration)
+- failure handling(None existed repos, enable to read files, wrote format)
+
+### Tradeoffs
+
+-Multi file format support future enhancement
+-filtering binary files 1 MB for now
+
 
 
