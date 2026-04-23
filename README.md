@@ -8,7 +8,7 @@ RepoGraph is a system that transforms source code repositories into structured g
 - [Diagrams](#diagrams)
 - [Tradeoffs](#tradeoffs)
 
-##⚙️ Architecture
+## ⚙️ Architecture
 ```mermaid
 graph TD
 A[repo]-->B[Ingenstion Engine]
@@ -17,13 +17,13 @@ C-->D[Metrics Engine]
 
 
 ```
-###Ingestion Engine
+### Ingestion Engine
 
 ####overview:
 A failure aware subsystem that takes a repo URL and tranforms it into a dictionary that represents the folder structure of a repo, this output will 
 be the input for the next layer the graph engine
 
-####⚙️ Architecture
+#### ⚙️ Architecture
 
 ```mermaid
 graph TD
