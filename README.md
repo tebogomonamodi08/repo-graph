@@ -10,7 +10,7 @@ RepoGraph is a system that transforms source code repositories into structured g
 
 ## ⚙️ Architecture
 ```mermaid
-graph TD
+graph LR
 A[repo]-->B[Ingenstion Engine]
 B-->C[Graph Engine]
 C-->D[Metrics Engine]
