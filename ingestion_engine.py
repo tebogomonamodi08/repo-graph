@@ -81,7 +81,8 @@ def ingest(repo : str) -> dict:
             'path': f_path,
             'extension': ext.strip('.'),
             'content': content,
-            'status': status
+            'status': status,
+            'relative_path': os.path.relpath(f_path)
             })
         
     
