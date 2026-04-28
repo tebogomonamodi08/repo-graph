@@ -61,35 +61,55 @@ Initialize:
 
 '''
 
-node = set()
-graph = {}
+import os
+from ingestion_engine import ingest
+
+path = r'C:\Users\Tebogo\OneDrive - Linkfields innovations\Desktop\observability_tool\test\test_repo'
+ingested_repo, trace = ingest(path)
+
+nodes = {}
 edges = []
 
 for f in ingested_repo['files']:
-    current_path = None
-    prev_path = None
     parts = f['relative_path'].split(os.sep)
-    for part in parts:
-        if current_path:
+
+    current_path = ""
+
+    for i, part in enumerate(parts):
+        # Build full path
+        if current_path == "":
             current_path = part
         else:
-            current_path = f'{current_path}/{part}'
-        node.add(current_path)
-        if prev_path:
-            edges.append((prev_path,current_path))
-        prev_path = current_path
-        
-        
-        
-        graph= {
-            'nodes' : node,
-            'edges' : edges
-            
-        }
-    
+            current_path = f"{current_path}/{part}"
+
+        # Determine type
+        node_type = "file" if i == len(parts) - 1 else "folder"
+
+        # Add node if not exists
+        if current_path not in nodes:
+            nodes[current_path] = {
+                "id": current_path,
+                "label": part,
+                "type": node_type
+            }
+
+        # Create edge
+        if i > 0:
+            parent = "/".join(parts[:i])
+            child = current_path
+
+            edges.append({
+                "source": parent,
+                "target": child,
+                "relationship": "contains"
+            })
+
+graph = {
+    "nodes": list(nodes.values()),
+    "edges": edges
+}
 
 print(graph)
-
                 
 
 
