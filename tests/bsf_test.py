@@ -14,28 +14,6 @@ Input: graph: Dict, start: String
         9. add into set
 
 """
-from collections import deque
-
-def proccess(node: str):
-    print(node,'->')
-    
-
-def bfs(graph: dict, start: str):
-    visited = set([start])
-    queue = deque([start])
-    depth = 0
-
-    
-    while queue:
-        node = queue.popleft()
-        proccess(node)
-        depth += 1
-        for n in graph.get(node, []):
-            if n not in visited:
-                queue.append(n)
-                visited.add(n)
-    
-    print(depth)
     
     
                 
@@ -48,9 +26,30 @@ graph = {
     'F':['C']
 }
 
-graph_1 = {
-    '''This was my test graph'''
-    
-}
 
-bfs(graph=graph, start='A')
+from collections import deque
+
+def bfs_search(graph, start, depth = 0):
+    if start in graph:
+        visted = set([start]) #we use this to stop cyclic traversal
+        queue = deque([(start,depth)])
+        
+        
+        while queue:
+            current_node, current_depth  = queue.popleft()
+            print(current_node, current_depth)
+           
+            
+            for n in graph[current_node]:
+                if n not in visted:
+                    queue.append((n, current_depth+1))
+                    visted.add(n)
+                    
+                    
+    else:
+        print('Node does not exist')
+    
+    print(queue)
+
+bfs_search(graph, 'A')
+        

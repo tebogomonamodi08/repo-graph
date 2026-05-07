@@ -1,6 +1,7 @@
 '''
-This module is responsible for traversing the output from graph_engine(a dictionary of nodes and edges)
-and extracting insights from the structure. 
+This module is responsible for transforming the output of the graph engine to adjecency list and traversing it
+the output from graph_engine(a dictionary of nodes and edges)
+then extracting insights from the structure(structural analysis for repo structure). 
 
 Flow:
 Input(graph_engine) -> Data Transformation -> BFS Algorithm -> Extract Depth, Hotspot
@@ -17,3 +18,18 @@ Arguments:
 
 
 '''
+
+from graph_engine import create_graph
+
+graph = create_graph()
+
+
+'''
+data transformation:
+#create dictionary with keys from graph 
+
+'''
+for node in graph.get('nodes', []):
+    print(node.get('label'))
+        
+    

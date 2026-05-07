@@ -21,11 +21,6 @@ output:
 '''
 
 
-from ingestion_engine import ingest
-import os
-
-path = r'C:\Users\Tebogo\OneDrive - Linkfields innovations\Desktop\observability_tool\test\test_repo'
-ingested_repo, trace = ingest(path)
 
 #\\observability_tool\\test\\test_repo\\models\\train.py
 
@@ -64,53 +59,56 @@ Initialize:
 import os
 from ingestion_engine import ingest
 
-path = r'C:\Users\Tebogo\OneDrive - Linkfields innovations\Desktop\observability_tool\test\test_repo'
-ingested_repo, trace = ingest(path)
 
-nodes = {}
-edges = []
 
-for f in ingested_repo['files']:
-    parts = f['relative_path'].split(os.sep)
+def create_graph():
+    path = r'C:\Users\Tebogo\OneDrive - Linkfields innovations\Desktop\observability_tool\test\test_repo'
+    ingested_repo, trace = ingest(path)
 
-    current_path = ""
 
-    for i, part in enumerate(parts):
-        # Build full path
-        if current_path == "":
-            current_path = part
-        else:
-            current_path = f"{current_path}/{part}"
+    nodes = {}
+    edges = []
 
-        # Determine type
-        node_type = "file" if i == len(parts) - 1 else "folder"
+    for f in ingested_repo['files']:
+        parts = f['relative_path'].split(os.sep)
 
-        # Add node if not exists
-        if current_path not in nodes:
-            nodes[current_path] = {
-                "id": current_path,
-                "label": part,
-                "type": node_type
-            }
+        current_path = ""
 
-        # Create edge
-        if i > 0:
-            parent = "/".join(parts[:i])
-            child = current_path
+        for i, part in enumerate(parts):
+            # Build full path
+            if current_path == "":
+                current_path = part
+            else:
+                current_path = f"{current_path}/{part}"
 
-            edges.append({
-                "source": parent,
-                "target": child,
-                "relationship": "contains"
-            })
+            # Determine type
+            node_type = "file" if i == len(parts) - 1 else "folder"
 
-graph = {
-    "nodes": list(nodes.values()),
-    "edges": edges
-}
+            # Add node if not exists
+            if current_path not in nodes:
+                nodes[current_path] = {
+                    "id": current_path,
+                    "label": part,
+                    "type": node_type
+                }
 
-print(graph)
-                
+            # Create edge
+            if i > 0:
+                parent = "/".join(parts[:i])
+                child = current_path
+
+                edges.append({
+                    "source": parent,
+                    "target": child,
+                    "relationship": "contains"
+                })
+
+    graph = {
+        "nodes": list(nodes.values()),
+        "edges": edges
+    }
+    return graph
+  
 
 
 
