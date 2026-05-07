@@ -65,8 +65,9 @@ def traverse_graph(adj_list: dict, start, depth = 0)->dict:
     This function traverses the tree level to level and derives metrics: depth, hotspots: top tree and number of folders
     and files
     '''
-    start = adj_list[0]
-    visted = set([start])
+    if start is None:
+        start = next(iter(adj_list)) #NB Testing purposes, this need to change.
+    visited = set([start])
     queue = deque([(start, depth)])
     depth_map = {
         start : 0,
@@ -77,15 +78,28 @@ def traverse_graph(adj_list: dict, start, depth = 0)->dict:
         #node exection
         
         for n in adj_list[current_node]:
-            if n not in visted:
+            if n not in visited:
                 queue.append((n,current_depth+1))
-                depth_map[n] = depth + 1
-                visted.add(n)
+                depth_map[n] = current_depth + 1
+                visited.add(n)
         
-    return depth_map
+    
+    def find_hotspot(adj_list: dict)-> dict:
+        children_count = {}
+        for node in adj_list:
+            children_count[node] = len(adj_list[node])
+        
+        return children_count
+            
+            
+    return { 'depth_map': depth_map,
+             'max_depth' : max(depth_map.values()),
+             'hotspots': find_hotspot(adj_list)
+            }
+            
     
 
-    
+print(traverse_graph(adj_list, next(iter(adj_list))))
     
 
 
