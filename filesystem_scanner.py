@@ -1,138 +1,89 @@
 from pathlib import Path
 import ast
 
+repo = input('Insert repo path:\n')
+repo = Path(repo.strip(""))
+modules = []
+functions = []
 
-class FileAnalyzer:
-    def __init__(self, path: Path):
-        self.path = path
+if repo.exists():
 
-    def analyze(self):
-        try:
-            source = self.path.read_text(encoding="utf-8", errors="ignore")
-            tree = ast.parse(source)
+    for node in repo.rglob('*.py'):
+        path = node.name
+        with open(node, 'r') as f:
+            obj = ast.parse(f.read())
+            
+        for n in ast.walk(obj):
+            if isinstance(n, ast.ImportFrom):
+                modules.append(n.module)
+            
+            if isinstance(n, ast.FunctionDef):
+                functions.append(n.name)
+            
+            
+    def dictionary_constructor(path ,modules,functions):
+        dependency_tree={}
+        dependency_tree[path] = {
+                'modules': modules,
+                'function':functions
+                }
+        
+        return dependency_tree
+    dp_graph = dictionary_constructor(path, modules, functions)
+    
+    def dependency_graph(repository):
+        nodes = set()
+        edges = []
 
-            data = {
-                "file": str(self.path),
-                "imports": [],
-                "classes": [],
-                "functions": [],
-            }
+        for file_name, data in repository.items():
 
-            for node in ast.walk(tree):
+            # Current file becomes a node
+            nodes.add(file_name)
 
-                if isinstance(node, ast.Import):
-                    for alias in node.names:
-                        data["imports"].append(alias.name)
+            # Every import becomes a relationship
+            for module in data["modules"]:
 
-                elif isinstance(node, ast.ImportFrom):
-                    module = node.module or ""
-                    for alias in node.names:
-                        if module:
-                            data["imports"].append(f"{module}.{alias.name}")
-                        else:
-                            data["imports"].append(alias.name)
+                if module is None:
+                    continue
 
-                elif isinstance(node, ast.ClassDef):
-                    data["classes"].append(node.name)
+            # Imported module is also a node
+                nodes.add(module)
 
-                elif isinstance(node, ast.FunctionDef):
-                    data["functions"].append(node.name)
+            # Edge
+                edges.append((file_name, module))
+                
+            print('Nodes')
+            print('*'*60)
+            for n in nodes:
+                print(n)
+            
+            print('Edges')
+            print('*'*60)
+            for n,edge in edges:
+                print(f'{n}--->{edge}')
 
-            return data
+        
+       
+        
+    print(dependency_graph(dp_graph))
+    def console_view():
+        dp_graph = dictionary_constructor(path, modules, functions)
+        print('*'*60)
+        print('REPOGRAPH')
+        print('*'*60)
+    
+        for k in dp_graph:
+            print(f'Module {k}')
+            print("Imports")
+            print('*'*60)
+            [print(module) for module in dp_graph[k].get('modules',[])]
+            print(f'Module Number {len(dp_graph[k].get('modules', []))}')
+    #print(ast.dump(obj, indent= 2))      
 
-        except SyntaxError:
-            return None
+        
+else:
+    print('Path does not exisit.')
+    
+   
 
-        except Exception as e:
-            print(f"Error reading {self.path}")
-            print(e)
-            return None
-
-
-class RepoGraph:
-
-    def __init__(self, root):
-        self.root = Path(root)
-
-    def scan(self):
-        if not self.root.exists():
-            raise FileNotFoundError(f"{self.root} does not exist.")
-
-        if not self.root.is_dir():
-            raise NotADirectoryError(f"{self.root} is not a directory.")
-
-        return list(self.root.rglob("*.py"))
-
-    def analyze(self):
-
-        files = self.scan()
-
-        print(f"\nFound {len(files)} Python files.\n")
-
-        repository = []
-
-        for file in files:
-            analyzer = FileAnalyzer(file)
-            result = analyzer.analyze()
-
-            if result:
-                repository.append(result)
-
-        return repository
-
-
-def report(repository):
-
-    print("=" * 60)
-    print("REPOGRAPH REPORT")
-    print("=" * 60)
-
-    print(f"Python Files : {len(repository)}")
-
-    imports = sum(len(f["imports"]) for f in repository)
-    classes = sum(len(f["classes"]) for f in repository)
-    functions = sum(len(f["functions"]) for f in repository)
-
-    print(f"Imports      : {imports}")
-    print(f"Classes      : {classes}")
-    print(f"Functions    : {functions}")
-
-    print()
-
-    for file in repository:
-
-        print("-" * 60)
-        print(file["file"])
-
-        if file["imports"]:
-            print("Imports:")
-            for i in file["imports"]:
-                print(f"  - {i}")
-
-        if file["classes"]:
-            print("Classes:")
-            for c in file["classes"]:
-                print(f"  - {c}")
-
-        if file["functions"]:
-            print("Functions:")
-            for f in file["functions"]:
-                print(f"  - {f}")
-
-        print()
-
-
-def main():
-
-    repo = input("Repository path: ").strip().strip('"')
-
-    graph = RepoGraph(repo)
-
-    repository = graph.analyze()
-
-    report(repository)
-
-
-if __name__ == "__main__":
-    main()
 
